@@ -1,0 +1,23 @@
+# Core data
+pandas
+numpy
+pyarrow
+
+# ML
+scikit-learn
+
+# Database
+sqlalchemy
+psycopg2-binary
+
+# Config & validation
+pydantic
+pydantic-settings
+python-dotenv
+
+# Logging & testing
+loguru
+pytest
+
+requests
+tqdm
