@@ -1,0 +1,5 @@
+Metadata-Version: 2.4
+Name: nyc-taxi
+Version: 0.1.0
+Summary: NYC TLC Taxi end-to-end data pipeline
+Requires-Python: >=3.10

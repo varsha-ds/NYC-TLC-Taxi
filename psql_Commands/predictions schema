@@ -1,0 +1,23 @@
+CREATE SCHEMA IF NOT EXISTS predictions;
+
+CREATE TABLE IF NOT EXISTS predictions.yellow_demand_zone_hour (
+  run_ts       timestamp NOT NULL,
+  hour_start   timestamp NOT NULL,
+  pu_location  integer NOT NULL,
+
+  yhat         double precision NOT NULL,
+
+  model_name   text NOT NULL,
+  train_end    timestamp NOT NULL,
+
+  PRIMARY KEY (run_ts, hour_start, pu_location)
+);
+
+CREATE INDEX IF NOT EXISTS idx_pred_hour ON predictions.yellow_demand_zone_hour(hour_start);
+CREATE INDEX IF NOT EXISTS idx_pred_zone ON predictions.yellow_demand_zone_hour(pu_location);
+
+-------------------------------
+
+ALTER TABLE predictions.yellow_demand_zone_hour
+  ALTER COLUMN run_ts TYPE timestamptz USING run_ts AT TIME ZONE 'America/New_York',
+  ALTER COLUMN train_end TYPE timestamptz USING train_end AT TIME ZONE 'America/New_York';

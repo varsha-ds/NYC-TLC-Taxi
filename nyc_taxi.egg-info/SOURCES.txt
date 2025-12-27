@@ -1,0 +1,6 @@
+README.md
+pyproject.toml
+nyc_taxi.egg-info/PKG-INFO
+nyc_taxi.egg-info/SOURCES.txt
+nyc_taxi.egg-info/dependency_links.txt
+nyc_taxi.egg-info/top_level.txt
