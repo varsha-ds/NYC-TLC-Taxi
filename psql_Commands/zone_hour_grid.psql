@@ -1,0 +1,104 @@
+
+CREATE TEMP TABLE tmp_zones AS
+SELECT DISTINCT pu_location
+FROM marts.yellow_demand_zone_hour;
+-----------------------------------
+#Generate all hours in the month
+
+CREATE TEMP TABLE tmp_hours AS
+SELECT
+  generate_series(
+    DATE '2025-01-01',
+    DATE '2025-01-31 23:00',
+    INTERVAL '1 hour'
+  ) AS hour_start;
+
+----------------------------------
+#Create the full grid
+CREATE TEMP TABLE tmp_zone_hour_grid AS
+SELECT
+  DATE '2025-01-01' AS ingest_month,
+  h.hour_start,
+  z.pu_location
+FROM tmp_hours h
+CROSS JOIN tmp_zones z;
+
+#This table now contains every possible (zone, hour).
+
+--------------------------------------
+
+#Left Join demand and fill zeros
+#Now we attach actual demand.
+
+CREATE TEMP TABLE tmp_zone_hour_filled AS
+SELECT
+  g.ingest_month,
+  g.hour_start,
+  g.pu_location,
+  COALESCE(d.trip_count, 0) AS trip_count
+FROM tmp_zone_hour_grid g
+LEFT JOIN marts.yellow_demand_zone_hour d
+  ON g.ingest_month = d.ingest_month
+ AND g.hour_start = d.hour_start
+ AND g.pu_location = d.pu_location;
+
+At this point:
+Every hour exists
+Zeros are explicit
+This is now valid time-series data
+
+--------------------------------------
+---------------------------------------
+Create lag + rolling features (NO LEAKAGE)
+---- ----- ----- ----- ----- ----- -----
+#Create the final features table
+CREATE TABLE IF NOT EXISTS features.yellow_demand_zone_hour_features (
+  ingest_month date NOT NULL,
+  hour_start   timestamp NOT NULL,
+  pu_location  integer NOT NULL,
+
+  trip_count   integer NOT NULL,
+
+  lag_1h       integer,
+  lag_24h      integer,
+  lag_168h     integer,
+
+  roll_6h      double precision,
+  roll_24h     double precision,
+  roll_168h    double precision,
+
+  pickup_hour  smallint NOT NULL,
+  pickup_dow   smallint NOT NULL,
+  is_weekend   boolean NOT NULL,
+
+  PRIMARY KEY (ingest_month, hour_start, pu_location)
+);
+
+---------------------------------------------
+#Insert features using window functions
+
+INSERT INTO features.yellow_demand_zone_hour_features
+SELECT
+  ingest_month,
+  hour_start,
+  pu_location,
+  trip_count,
+
+  LAG(trip_count, 1)   OVER w AS lag_1h,
+  LAG(trip_count, 24)  OVER w AS lag_24h,
+  LAG(trip_count, 168) OVER w AS lag_168h,
+
+  AVG(trip_count) OVER w6  AS roll_6h,
+  AVG(trip_count) OVER w24 AS roll_24h,
+  AVG(trip_count) OVER w168 AS roll_168h,
+
+  EXTRACT(HOUR FROM hour_start)::smallint AS pickup_hour,
+  EXTRACT(DOW  FROM hour_start)::smallint AS pickup_dow,
+  (EXTRACT(DOW FROM hour_start) IN (0,6)) AS is_weekend
+
+FROM tmp_zone_hour_filled
+WINDOW
+  w    AS (PARTITION BY pu_location ORDER BY hour_start),
+  w6   AS (PARTITION BY pu_location ORDER BY hour_start ROWS BETWEEN 5 PRECEDING AND CURRENT ROW),
+  w24  AS (PARTITION BY pu_location ORDER BY hour_start ROWS BETWEEN 23 PRECEDING AND CURRENT ROW),
+  w168 AS (PARTITION BY pu_location ORDER BY hour_start ROWS BETWEEN 167 PRECEDING AND CURRENT ROW);

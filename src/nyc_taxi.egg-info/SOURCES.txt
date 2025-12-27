@@ -1,0 +1,12 @@
+README.md
+pyproject.toml
+src/nyc_taxi/__init__.py
+src/nyc_taxi/config.py
+src/nyc_taxi/db.py
+src/nyc_taxi/logging.py
+src/nyc_taxi.egg-info/PKG-INFO
+src/nyc_taxi.egg-info/SOURCES.txt
+src/nyc_taxi.egg-info/dependency_links.txt
+src/nyc_taxi.egg-info/top_level.txt
+src/nyc_taxi/ingestion/__init__.py
+src/nyc_taxi/ingestion/yellow.py

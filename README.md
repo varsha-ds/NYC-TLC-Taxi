@@ -20,3 +20,6 @@ PYTHONPATH=src python scripts/ingest_yellow.py --year 2025 --month 1
 PYTHONPATH=src python  scripts/bootstrap_processed.py
 PYTHONPATH=src python scripts/build_processed_yellow.py --year 2025 --month 1
 
+PYTHONPATH=src python scr
+ipts/build_features_yellow.py --year 2025 --month 1
+NYC-TLC-Taxi varshadundhigalla$ PYTHONPATH=src python scripts/build_demand_zone_hour.py --year 2025 --month 1
