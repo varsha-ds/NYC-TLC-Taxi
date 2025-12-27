@@ -12,3 +12,11 @@ NYC Taxi End-to-End Production ML Pipeline
 • Postgres + COPY-based loading
 • Schema-on-read raw layer
 • Processed + feature-ready architecture
+
+
+commands - 
+PYTHONPATH=src python scripts/ingest_yellow.py --year 2025 --month 1
+
+PYTHONPATH=src python  scripts/bootstrap_processed.py
+PYTHONPATH=src python scripts/build_processed_yellow.py --year 2025 --month 1
+
