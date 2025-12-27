@@ -21,3 +21,12 @@ CREATE INDEX IF NOT EXISTS idx_pred_zone ON predictions.yellow_demand_zone_hour(
 ALTER TABLE predictions.yellow_demand_zone_hour
   ALTER COLUMN run_ts TYPE timestamptz USING run_ts AT TIME ZONE 'America/New_York',
   ALTER COLUMN train_end TYPE timestamptz USING train_end AT TIME ZONE 'America/New_York';
+
+-------------------------------
+ALTER TABLE predictions.yellow_demand_zone_hour
+ADD COLUMN IF NOT EXISTS horizon_hours int;
+
+CREATE UNIQUE INDEX IF NOT EXISTS uq_pred_identity
+ON predictions.yellow_demand_zone_hour (model_name, train_end, horizon_hours, hour_start, pu_location);
+
+
