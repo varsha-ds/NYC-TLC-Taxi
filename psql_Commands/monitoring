@@ -1,0 +1,14 @@
+CREATE TABLE IF NOT EXISTS predictions.run_metrics (
+  run_ts      timestamptz NOT NULL,
+  model_name  text NOT NULL,
+  train_end   timestamptz NOT NULL,
+  horizon_hours int NOT NULL,
+
+  rows_joined int NOT NULL,
+  mae         double precision,
+  rmse        double precision,
+
+  created_at  timestamptz NOT NULL DEFAULT now(),
+
+  PRIMARY KEY (run_ts, model_name)
+);
