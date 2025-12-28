@@ -44,7 +44,7 @@ def train_model(train_end_ts: pd.Timestamp) -> HistGradientBoostingRegressor:
 
     df_train = pd.read_sql(text(train_sql), engine, params={"train_end": train_end_ts})
 
-    # Drop rows with missing feature values (early history)
+
     df_train = df_train.dropna(subset=FEATURES + [TARGET])
 
     if df_train.empty:
@@ -206,7 +206,7 @@ def main(train_end: str | None, horizon_hours: int):
     
 
     train_end_ts = pd.Timestamp(train_end) if train_end else get_latest_train_end()
-    # Use UTC for run timestamp (recommended)
+    # Use UTC for run timestamp 
     if already_ran(train_end_ts, horizon_hours):
         print(
             f"Skip: predictions already exist "
