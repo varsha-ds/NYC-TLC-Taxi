@@ -1,4 +1,4 @@
-# NYC TLC Taxi - Zone-Hour Demand Forecasting
+**NYC TLC Taxi — Zone-Hour Demand Forecasting (End-to-End ML System)**
 
 End-to-end demand forecasting pipeline for NYC TLC Yellow Taxi data. The system ingests monthly trip records, cleans and types them into Postgres, aggregates demand by pickup zone and hour, engineers time-series features (lags + rolling means), trains a model that outperforms strong baselines, generates predictions into Postgres, and evaluates backtests.
 
