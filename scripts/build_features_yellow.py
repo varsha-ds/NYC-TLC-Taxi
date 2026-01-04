@@ -2,7 +2,37 @@ import argparse
 from datetime import date
 from sqlalchemy import text
 from nyc_taxi.db import engine
+"""Create the features table (run once in psql)
 
+CREATE SCHEMA IF NOT EXISTS features;
+
+CREATE TABLE IF NOT EXISTS features.yellow_trips (
+  ingest_month   date NOT NULL,
+  pickup_ts      timestamp NOT NULL,
+  dropoff_ts     timestamp NOT NULL,
+  pu_location    integer NOT NULL,
+  do_location    integer NOT NULL,
+
+  trip_distance  double precision NOT NULL,
+  total_amount   double precision NOT NULL,
+
+  trip_seconds   integer NOT NULL,
+  trip_minutes   double precision NOT NULL,
+  speed_mph      double precision,
+
+  pickup_hour    smallint NOT NULL,
+  pickup_dow     smallint NOT NULL,
+  is_weekend     boolean NOT NULL
+);
+
+-- Helpful indexes
+CREATE INDEX IF NOT EXISTS idx_features_yellow_month ON features.yellow_trips (ingest_month);
+CREATE INDEX IF NOT EXISTS idx_features_yellow_pickup_ts ON features.yellow_trips (pickup_ts);
+
+-- Optional uniqueness (prevents duplicates)
+CREATE UNIQUE INDEX IF NOT EXISTS ux_features_yellow_key
+ON features.yellow_trips (ingest_month, pickup_ts, dropoff_ts, pu_location, do_location);
+"""
 
 SQL = """
 DELETE FROM features.yellow_trips

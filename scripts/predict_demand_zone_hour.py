@@ -7,6 +7,45 @@ from sklearn.ensemble import HistGradientBoostingRegressor
 
 from nyc_taxi.db import engine
 
+"""CREATE SCHEMA IF NOT EXISTS marts;
+
+CREATE TABLE IF NOT EXISTS marts.yellow_demand_zone_hour (
+  ingest_month      date NOT NULL,
+  hour_start        timestamp NOT NULL,
+  pu_location       integer NOT NULL,
+
+  trip_count        integer NOT NULL,
+
+  avg_trip_minutes  double precision,
+  avg_trip_distance double precision,
+  avg_total_amount  double precision,
+
+  PRIMARY KEY (ingest_month, hour_start, pu_location)
+);
+
+CREATE INDEX IF NOT EXISTS idx_demand_hour ON marts.yellow_demand_zone_hour (hour_start);
+CREATE INDEX IF NOT EXISTS idx_demand_zone ON marts.yellow_demand_zone_hour (pu_location);
+"""
+
+"""How many rows did we create?
+SELECT ingest_month, COUNT(*) AS rows
+FROM marts.yellow_demand_zone_hour
+GROUP BY 1
+ORDER BY 1;
+
+Look at top-demand zones for a specific hour
+SELECT hour_start, pu_location, trip_count
+FROM marts.yellow_demand_zone_hour
+WHERE ingest_month = DATE '2025-01-01'
+ORDER BY trip_count DESC
+LIMIT 20;
+
+Check if you have continuous hours (sanity)
+SELECT MIN(hour_start), MAX(hour_start)
+FROM marts.yellow_demand_zone_hour
+WHERE ingest_month = DATE '2025-01-01';
+
+"""
 MODEL_NAME = "histgb_poisson_v1"
 
 FEATURES = [
